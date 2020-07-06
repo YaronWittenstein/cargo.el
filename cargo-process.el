@@ -151,6 +151,10 @@
   "Subcommand used by `cargo-process-current-test'."
   :type 'string)
 
+(defcustom cargo-process--command-current-test-nocapture nil
+  "Subcommand used by `cargo-process-current-test'."
+  :type 'boolean)
+
 (defcustom cargo-process--command-current-file-tests "test"
   "Subcommand used by `cargo-process-current-file-tests'."
   :type 'string)
@@ -454,6 +458,11 @@ if the CMD is expected to open and external application."
       (concat "setsid -w " cmd)
     cmd))
 
+(defun cargo-process--current-test-nocapture ()
+  "Append `-- --nocapture` when `cargo-process--command-current-test-nocapture` is non-nil".
+  (if (cargo-process--command-current-test-nocapture)
+      ("-- --nocapture")
+
 ;;;###autoload
 (defun cargo-process-bench ()
   "Run the Cargo bench command.
@@ -605,7 +614,9 @@ Cargo: Run the tests."
   (cargo-process--start "Test"
                         (concat cargo-process--command-current-test
                                 " "
-                                (cargo-process--get-current-test-fullname))))
+                                (cargo-process--get-current-test-fullname)
+				" "
+				(cargo-process--current-test-nocapture))))
 
 ;;;###autoload
 (defun cargo-process-current-file-tests ()
